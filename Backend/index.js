@@ -25,7 +25,7 @@ const openai = new OpenAI({
 app.get('/fortuneTell', async function (req, res) {
         const completion = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
-            max_tokens : 1016, // 답변 문자열 길이, 토큰 기준(한글은 한글자에 3토큰정도, 영어는 한 토큰에 3글자정도 )
+            max_tokens : 1016, // 답변 문자열 길이, 토큰 기준(한글은 한글자에 3토큰정도, 영어는 한 토큰에 3글자정도  )
             temperature : 0.7, // 랜덤한 답변 정도, 낮으면 항상 같은 답변이 제공됨
             top_p : 0.8, // 답변의 다양성 높을수록 다양한 답변이 나오는 대신, 올바르지 않은 답변이 가능함
           messages: [
