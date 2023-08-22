@@ -8,14 +8,39 @@
 </head>
 <body>
     <h1></h1>
+    <button onclick="getFortune()">요청하기</button>
     <script>
-    const response = await fetch("http://localhost:3000/fortuneTell", {
-      method: "POST", // 또는 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+async function getFortune() {
+    try {
+        const response = await fetch('http://localhost:3000/fortuneTell', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({name : 'john'}) // 보낼 데이터가 있다면 수정해야함
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+        return data;
+
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error.message);
+        throw error;
+    }
+}
+
+getFortune()
+    .then(fortune => {
+        console.log(fortune);
+    })
+    .catch(error => {
+        console.error('Error occurred:', error.message);
     });
+
     </script>
 </body>
 </html>
