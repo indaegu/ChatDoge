@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"> 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운세보는 챗도지!</title>
+</head>
+<body>
+    <h1></h1>
+    <script>
+    const response = await fetch("http://localhost:3000/fortuneTell", {
+      method: "POST", // 또는 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    </script>
+</body>
+</html>
