@@ -39,6 +39,23 @@ app.post('/fortuneTell', async function (req, res) {
         console.log(fortune)
         res.json({"assistant" : fortune})
 })
+
+// 추가적인 질문에 대한 응답을 제공하는 API
+app.post('/answerQuestion', async function (req, res) {
+  const userQuestion = req.body.question;
+
+  const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      max_tokens: 1016,
+      temperature: 0.7,
+      top_p: 0.8,
+      messages: [
+          { role: 'user', content: userQuestion },
+      ],
+  });
+  let answer = completion.choices[0].message['content'];
+  res.json({ "assistant": answer });
+});
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("서버가 " + port + "번 포트에서 실행중입니다.");
