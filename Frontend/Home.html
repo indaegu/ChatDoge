@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        /* Basic styling for the form */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="fortuneForm">
+        <label for="birthdate">태어난 날짜:</label>
+        <input type="date" id="birthdate" required>
+
+        <label for="birthtime">태어난 시간:</label>
+        <input type="time" id="birthtime" required>
+
+        <label for="zodiac">별자리:</label>
+        <select id="zodiac" required>
+            <option value="aries">양자리</option>
+            <option value="taurus">황소자리</option>
+            <option value="aries">양자리</option>
+            <option value="taurus">황소자리</option>
+            <option value="gemini">쌍둥이자리</option>
+            <option value="cancer">게자리</option>
+            <option value="leo">사자자리</option>
+            <option value="virgo">처녀자리</option>
+            <option value="libra">천칭자리</option>
+            <option value="scorpio">전갈자리</option>
+            <option value="sagittarius">궁수자리</option>
+            <option value="capricorn">염소자리</option>
+            <option value="aquarius">물병자리</option>
+            <option value="pisces">물고기자리</option>
+        </select>
+
+        <input type="submit" value="운세 보기">
+    </form>
+
+    <script>
+        document.getElementById('fortuneForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            let birthdate = document.getElementById('birthdate').value;
+            let birthtime = document.getElementById('birthtime').value;
+            let zodiac = document.getElementById('zodiac').value;
+
+            let response = await fetch('http://127.0.0.1:3000/fortuneTell', { // 주소 변경
+                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                         },
+                body: JSON.stringify({ birthdate, birthtime, zodiac }),
+                });
+
+
+            let data = await response.json();
+
+            // Redirect to Result.js page with the data
+            localStorage.setItem('fortuneResponse', JSON.stringify(data));
+            window.location.href = 'next.html';
+        });
+    </script>
+</body>
+
+</html>

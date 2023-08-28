@@ -1,166 +1,91 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8"> 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>운세 확인하기</title>
-    <link href="//code.ionicframework.com/1.0.0-beta.14/css/ionic.min.css" rel="stylesheet">
-    <script src="//code.ionicframework.com/1.0.0-beta.14/js/ionic.bundle.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.8.2/angular-moment.min.js"></script>
-    <link rel="stylesheet" href="chat.css">
+    <title>Result</title>
+    <style>
+        /* Basic styling for the chat and form */
+        #chat {
+            width: 80%;
+            height: 400px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            overflow-y: auto;
+            margin: 50px auto;
+        }
+
+        #loading {
+            animation: blinker 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+        }
+    </style>
 </head>
-<body ng-app="elastichat">
-    <ion-nav-view></ion-nav-view>
-    <script id="templates/UserMessages.html" type="text/ng-template">
-      <!-- 채팅 UI 코드 -->
-      <ion-view id="userMessagesView"
-          cache-view="false" 
-          view-title="<i class='icon ion-chatbubble user-messages-top-icon'></i> <div class='msg-header-username'>{{toUser.username}}</div>">
-        
-        <div class="loader-center" ng-if="!doneLoading">
-            <div class="loader">
-              <i class="icon ion-loading-c"></i>
-            </div>
-        </div>
-      
-          <ion-content has-bouncing="true" class="has-header has-footer" 
-              delegate-handle="userMessageScroll">
-            
-              <div ng-repeat="message in messages" class="message-wrapper"
-                  on-hold="onMessageHold($event, $index, message)">
-      
-                  <div ng-if="user._id !== message.userId">
-                      
-                    <img ng-click="viewProfile(message)" class="profile-pic left" 
-                          ng-src="{{toUser.pic}}" onerror="onProfilePicError(this)" />
-      
-                      <div class="chat-bubble left">
-      
-                          <div class="message" ng-bind-html="message.text | nl2br" autolinker>
-                          </div>
-      
-                          <div class="message-detail">
-                              <span ng-click="viewProfile(message)" 
-                                  class="bold">{{toUser.username}}</span>,
-                              <span am-time-ago="message.date"></span>
-                          </div>
-      
-                      </div>
-                  </div>
-      
-                  <div ng-if="user._id === message.userId">
-                    
-                       <img ng-click="viewProfile(message)" class="profile-pic right" 
-                          ng-src="{{user.pic}}" onerror="onProfilePicError(this)" />
-                    
-                      <div class="chat-bubble right">
-      
-                          <div class="message" ng-bind-html="message.text | nl2br" autolinker>
-                          </div>
-      
-                          <div class="message-detail">
-                              <span ng-click="viewProfile(message)" 
-                                  class="bold">{{user.username}}</span>, 
-                              <span am-time-ago="message.date"></span>
-                          </div>
-      
-                      </div>
-                    
-                  </div>
-      
-                  <div class="cf"></div>
-      
-              </div>
-          </ion-content>
-      
-          <form name="sendMessageForm" ng-submit="sendMessage(sendMessageForm)" novalidate>
-              <ion-footer-bar class="bar-stable item-input-inset message-footer" keyboard-attach>
-                  <label class="item-input-wrapper">
-                      <textarea ng-model="input.message" value="" placeholder="Send {{toUser.username}} a message..." required minlength="1" maxlength="1500" msd-elastic></textarea>
-                  </label>
-                  <div class="footer-btn-wrap">
-                    <button class="button button-icon icon ion-android-send footer-btn" type="submit"
-                        ng-disabled="!input.message || input.message === ''">
-                    </button>
-                  </div>
-              </ion-footer-bar>
-          </form>
-          
-      </ion-view>
-    </script>
 
-    <!-- 결과 및 추가 질문 영역 -->
-    <div id="result">
-        <h2>당신의 운세는:</h2>
-        <p id="fortuneText"></p>
-        <label>
-            추가 질문: <input type="text" id="question">
-        </label>
-        <button onclick="askQuestion()">질문하기</button>
-        <p id="answerText"></p>
-    </div>
+<body>
 
-    <script>
-        async function getFortune() {
-            // 애니메이션 표시
-            document.getElementById("fortuneText").innerText = "운세확인하는중...";
-            
-            try {
-                const response = await fetch('http://localhost:3000/fortuneTell', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        dob: document.getElementById("dob").value,
-                        birthTime: document.getElementById("birthTime").value,
-                        zodiac: document.getElementById("zodiac").value,
-                    }),
-                });
+<div id="chat">
+    <!-- Initial chat messages will be appended here -->
+</div>
 
-                const data = await response.json();
-                document.getElementById("fortuneText").innerText = data.assistant;
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+<div id="loading">운세 보는중...</div>
 
-        async function askQuestion() {
-            const question = document.getElementById("question").value;
-            
-            if (!question.trim()) return;
+<form id="questionForm">
+    <label for="userQuestion">질문:</label>
+    <input type="text" id="userQuestion">
+    <input type="submit" value="질문하기">
+</form>
 
-            async function askQuestion() {
-            const question = document.getElementById('userInput').value;
-            addMessageToChat("user", question);
+<script>
+    // Load initial chat messages from local storage
+    let fortuneResponse = JSON.parse(localStorage.getItem('fortuneResponse'));
+    let chatDiv = document.getElementById('chat');
+    let loadingDiv = document.getElementById('loading');
 
-            try {
-                const response = await fetch('http://localhost:3000/fortuneTell', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ question: question })
-                });
-                const data = await response.json();
-                addMessageToChat("assistant", data.assistant);
-            } catch (error) {
-                console.error('Error fetching answer:', error);
-            }
-        }
+    chatDiv.innerHTML += `<div>User: 오늘의 운세가 뭐야?</div>`;
+    chatDiv.innerHTML += `<div>Assistant: ${fortuneResponse.assistant}</div>`;
 
-        function addMessageToChat(role, message) {
-            const chatDiv = document.createElement('div');
-            chatDiv.className = role;
-            chatDiv.innerText = message;
-            document.getElementById('chat').appendChild(chatDiv);
-        }
-        }
+    document.getElementById('questionForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-        // 페이지 로딩 시 운세 정보 가져오기
-        window.onload = getFortune;
-    </script>
+        let userQuestion = document.getElementById('userQuestion').value;
+
+        chatDiv.innerHTML += `<div>User: ${userQuestion}</div>`;
+        loadingDiv.style.display = "block"; // Show loading animation
+
+        let response = await fetch('http://127.0.0.1:3000/answerQuestion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question: userQuestion }),
+        });
+
+        let data = await response.json();
+
+        loadingDiv.style.display = "none"; // Hide loading animation
+        chatDiv.innerHTML += `<div>Assistant: ${data.assistant}</div>`;
+    });
+</script>
 </body>
+
 </html>
