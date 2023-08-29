@@ -1,0 +1,187 @@
+<html><head>
+    <meta charset="UTF-8">
+    <title>Chat UI Screen</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .chat-box {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow-y: scroll;
+            height: 300px;
+        }
+
+        .chat-message {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chat-message p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .chat-input button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background-color: #3e8e41;
+        }
+
+        .assistant {
+            color: blue;
+        }
+        .intro-container{
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items :center;
+        }
+        .intro-container img{
+            width : 50%;
+            min-width: 300px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id ="intro" class="intro-container">
+        <p1 >운세에 대해서 물어봐 주세요!</p1>
+        <img src="점쟁이 시바견.jpg" alr="점쟁이 시바견">
+        <label for="date">생년월일</label>
+        <input id="date" type="date">
+        <label for="time">태어난 시간</label>
+        <input id="time" type="time" type="time">
+        <label for="zodiac">별자리:</label>
+            <select id="zodiac" required>
+                <option value="양자리">양자리</option>
+                <option value="황소자리">황소자리</option>
+                <option value="쌍둥이자리">쌍둥이자리</option>
+                <option value="게자리">게자리</option>
+                <option value="사자자리">사자자리</option>
+                <option value="처녀자리">처녀자리</option>
+                <option value="천칭자리">천칭자리</option>
+                <option value="전갈자리">전갈자리</option>
+                <option value="궁수자리">궁수자리</option>
+                <option value="염소자리">염소자리</option>
+                <option value="물병자리">물병자리</option>
+                <option value="물고기자리">물고기자리</option>
+            </select>
+        <button onclick="start()">오늘의 운세보기</button>
+    </div>
+    <div id = "chat" class="chat-container" style="display: none">
+        <div class="chat-box">
+            <div class="chat-message">
+                <p class="assistant">운세에 대해서 물어봐 주세요!</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message here...">
+            <button>Send</button>
+        </div>
+    </div>
+    <script>
+        const chatBox = document.querySelector('.chat-box');
+        const chatInput = document.querySelector('.chat-input input');
+        let dateTimeString ='';
+        let selectZodiacString = '';
+        function start() {
+            const dateValue = document.getElementById("date").value;
+            const timeValue = document.getElementById("time").value;
+            const zodiac = document.getElementById("zodiac").value;
+            if (date === ''){
+                alert('생년월일을 입력해주세요!')
+                return;
+            }
+            if(zodiac === ''){
+                alert('별자리를 선택해주세요!')
+                return;
+            }
+             // Combine date and time into a single string
+            dateTimeString = `${dateValue} ${timeValue}`;
+            selectZodiacString = `${zodiac}`;
+            console.log('입력한 날짜 : ' + dateTimeString + '\n입력한 별자리 : ' + selectZodiacString);
+            document.getElementById("intro").style.display ="none";
+            document.getElementById("chat").style.display ="block";
+        }
+    
+        const sendMessage = async () => {
+            const chatMessage = document.createElement('div');
+            chatMessage.classList.add('chat-message');
+            chatMessage.innerHTML = `<p>${chatInput.value}</p>`;
+            chatBox.appendChild(chatMessage);
+    
+            // 값을 저장해 놓고 입력 창을 비웁니다.
+            const savedInputValue = chatInput.value;
+            chatInput.value = '';
+    
+            const response = await fetch('http://localhost:3000/fortuneTell', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    dateTimeString: dateTimeString,
+                    selectZodiacString: selectZodiacString,
+                    userMessage: savedInputValue
+                })
+            });
+    
+            const data = await response.json();
+    
+            const astrologerMessage = document.createElement('div');
+            astrologerMessage.classList.add('chat-message');
+            astrologerMessage.innerHTML = `<p class='assistant'>${data.assistant}</p>`;
+            chatBox.appendChild(astrologerMessage);
+        };
+    
+        // Send 버튼을 클릭했을 때
+        document.querySelector('.chat-input button').addEventListener('click', sendMessage);
+    
+        // 키보드의 엔터키를 눌렀을 때
+        chatInput.addEventListener('keydown', (event) => {
+            if (event.keyCode === 13 || event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+    
+    
+
+
+</body></html>
