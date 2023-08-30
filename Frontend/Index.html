@@ -76,6 +76,26 @@
             min-width: 300px;
 
         }
+        .loading-spinner {
+            display: flex;
+            justify-content: left;
+            align-items: left;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
     </style>
 </head>
 
@@ -106,6 +126,9 @@
     </div>
     <div id = "chat" class="chat-container" style="display: none">
         <div class="chat-box">
+            <div class="loading-spinner" style="display:none;">
+                운세 보는중...  <div class="spinner"></div>
+            </div>
             <div class="chat-message">
                 <p class="assistant">운세에 대해서 물어봐 주세요!</p>
             </div>
@@ -139,36 +162,51 @@
             document.getElementById("intro").style.display ="none";
             document.getElementById("chat").style.display ="block";
         }
-    
+
+        const loadingSpinner = document.querySelector('.loading-spinner');
         const sendMessage = async () => {
-            const chatMessage = document.createElement('div');
-            chatMessage.classList.add('chat-message');
-            chatMessage.innerHTML = `<p>${chatInput.value}</p>`;
-            chatBox.appendChild(chatMessage);
-    
-            // 값을 저장해 놓고 입력 창을 비웁니다.
-            const savedInputValue = chatInput.value;
-            chatInput.value = '';
-    
-            const response = await fetch('http://localhost:3000/fortuneTell', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    dateTimeString: dateTimeString,
-                    selectZodiacString: selectZodiacString,
-                    userMessage: savedInputValue
-                })
-            });
-    
-            const data = await response.json();
-    
-            const astrologerMessage = document.createElement('div');
-            astrologerMessage.classList.add('chat-message');
-            astrologerMessage.innerHTML = `<p class='assistant'>${data.assistant}</p>`;
-            chatBox.appendChild(astrologerMessage);
-        };
+    const chatMessage = document.createElement('div');
+    chatMessage.classList.add('chat-message');
+    chatMessage.innerHTML = `<p>${chatInput.value}</p>`;
+    chatBox.appendChild(chatMessage);
+
+    // 값을 저장해 놓고 입력 창을 비웁니다.
+    const savedInputValue = chatInput.value;
+    chatInput.value = '';
+
+    // 로딩 스피너 동적으로 추가
+    chatBox.appendChild(loadingSpinner);
+    loadingSpinner.style.display = 'flex';
+
+    // 스크롤을 아래로 이동
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const response = await fetch('http://localhost:3000/fortuneTell', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            dateTimeString: dateTimeString,
+            selectZodiacString: selectZodiacString,
+            userMessage: savedInputValue
+        })
+    });
+
+    // 로딩 스피너 제거
+    chatBox.removeChild(loadingSpinner);
+
+    const data = await response.json();
+
+    const astrologerMessage = document.createElement('div');
+    astrologerMessage.classList.add('chat-message');
+    astrologerMessage.innerHTML = `<p class='assistant'>${data.assistant}</p>`;
+    chatBox.appendChild(astrologerMessage);
+
+    // 스크롤을 아래로 이동
+    chatBox.scrollTop = chatBox.scrollHeight;
+};
+
     
         // Send 버튼을 클릭했을 때
         document.querySelector('.chat-input button').addEventListener('click', sendMessage);
