@@ -1,4 +1,4 @@
-# 오늘의 운세 - 챗도지(ChatDogi) 
+# 오늘의 운세 - 챗도지(ChatDoge) 
 
 **챗도지**는 사용자의 생년월일, 태어난 시간, 별자리를 기반으로 오늘의 운세를 알려주는 웹 애플리케이션입니다! 점성술과 운세에 대한 광범위한 지식을 가진 챗도지에게 운세를 물어보세요!
 
@@ -29,13 +29,13 @@
 1. 저장소를 클론합니다.
 
    ```
-   git clone https://github.com/yourusername/ChatDogi.git
+   git clone https://github.com/yourusername/ChatDoge.git
    ```
 
 2. 디렉토리로 이동합니다.
 
    ```
-   cd ChatDogi
+   cd ChatDoge
    ```
 
 3. 필요한 패키지를 설치합니다.
